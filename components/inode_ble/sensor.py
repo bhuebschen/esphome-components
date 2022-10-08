@@ -6,9 +6,9 @@ from esphome.const import CONF_ID, CONF_MAC_ADDRESS, \
     UNIT_PERCENT, ICON_BATTERY, \
     UNIT_WATT, ICON_FLASH, \
     ICON_BRIGHTNESS_5, ICON_CURRENT_AC, \
-    ESP_PLATFORM_ESP32
+    PLATFORM_ESP32
 
-ESP_PLATFORMS = [ESP_PLATFORM_ESP32]
+ESP_PLATFORMS = [PLATFORM_ESP32]
 DEPENDENCIES = ['esp32_ble_tracker']
 
 iNodeMeterSensor = cg.global_ns.class_('iNodeMeterSensor',

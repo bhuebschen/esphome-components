@@ -7,7 +7,7 @@ from esphome.const import CONF_ID, CONF_TIME_ID, CONF_MAC_ADDRESS, \
 
 ESP_PLATFORMS = [PLATFORM_ESP32]
 DEPENDENCIES = ['time']
-AUTO_LOAD = ['sensor', 'ble_client']
+AUTO_LOAD = ['sensor', 'esp32_ble_clients']
 
 CONF_TEMPERATURE_OFFSET = 'temperature_offset'
 CONF_WINDOW_OPEN_SENSITIVITY = 'window_open_sensitivity'

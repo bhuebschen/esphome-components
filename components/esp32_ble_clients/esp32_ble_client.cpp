@@ -1,9 +1,13 @@
 #include "esphome/core/helpers.h"
+#include "esphome/core/hal.h"
+#include "esphome/core/util.h"
 
 #include "esp32_ble.h"
 #include "esp32_ble_log.h"
 #include "esp32_ble_lock.h"
 #include "esp32_ble_client.h"
+
+#include <string.h>
 
 static const char *TAG = "esp32_ble_client";
 
@@ -47,6 +51,10 @@ ESP32BLEClient::ESP32BLEClient(uint16_t app_id)
     notification.notification = result.param.notify.is_notify;
     notifications.push_back(notification);
   };
+
+  event_handlers[ESP_GATTC_CONNECT_EVT] = [this](const EventResult &result) {
+    // Do nothing, do not set-up encryption
+  };
 }
 
 ESP32BLEClient::~ESP32BLEClient()
@@ -79,7 +87,7 @@ esp_err_t ESP32BLEClient::log(const char *reason, esp_err_t code)
   } else {
     BLE_LOGI(TAG, "SUCCESS[%10llx]: %s\n", address64, reason);
   }
-  BLE_LOGD(TAG, "FREE_HEAP: %d\n", ESP.getFreeHeap());
+  BLE_LOGD(TAG, "FREE_HEAP: %d\n", heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
 
   return code;
 }
@@ -409,34 +417,6 @@ bool ESP32BLEClient::write(
   }
 
   return wait_for_event(lock, write_event, timeout_ms, [this](const EventResult &result) {
-    return GATT_LOG(result.param.write.status) == ESP_GATT_OK;
-  });
-}
-
-bool ESP32BLEClient::read(
-  uint16_t handle
-  )
-{
-  ESP32BLELock lock(this->lock);
-
-  if (state != Ready) {
-    return false;
-  }
-
-  auto read_func = esp_ble_gattc_read_char;
-  auto read_event = ESP_GATTC_READ_CHAR_EVT;
-
-  auto ret = GATT_LOG(read_func(
-    *gattc_if, *conn_id, handle, 
-    ESP_GATT_AUTH_REQ_NONE
-  ));
-  if (ret != ESP_OK) {
-    return false;
-  }
- 
-  return wait_for_event(lock, read_event, timeout_ms, [this](const EventResult &result) {
-    this->readresult_value = result.param.read.value;
-    this->readresult_value_len = result.param.read.value_len;
     return GATT_LOG(result.param.write.status) == ESP_GATT_OK;
   });
 }

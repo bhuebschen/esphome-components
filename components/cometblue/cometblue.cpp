@@ -10,65 +10,77 @@ using namespace esphome::climate;
 
 static const char *TAG = "cometblue";
 
-CometBlueClimate::CometBlueClimate() {
+CometBlueClimate::CometBlueClimate()
+{
 }
 
-CometBlueClimate::~CometBlueClimate() {
+CometBlueClimate::~CometBlueClimate()
+{
 }
 
-void CometBlueClimate::setup() {
+void CometBlueClimate::setup()
+{
   auto restore = restore_state_();
-  if (restore.has_value()) {
-    restore->apply(this);    
-  } 
+  if (restore.has_value())
+  {
+    restore->apply(this);
+  }
 }
 
-
-void CometBlueClimate::update() {
+void CometBlueClimate::update()
+{
   cancel_timeout("update_retry");
 
   update_retry(3);
 }
 
-void CometBlueClimate::update_retry(int tries) {
+void CometBlueClimate::update_retry(int tries)
+{
   ESP_LOGI(TAG, "Requesting update of %10llx...", address);
 
-  bool success = with_connection([this]() {
-    return send_pincode() && query_state();
-  });
+  bool success = with_connection([this]()
+                                 { return send_pincode() && query_state(); });
 
-  if (success) {
+  if (success)
+  {
     publish_state();
   }
 
-  if (success) {
+  if (success)
+  {
     ESP_LOGI(TAG, "Update of %10llx succeeded.", address);
-  } else if (--tries > 0) {
+  }
+  else if (--tries > 0)
+  {
     ESP_LOGW(TAG, "Update of %10llx failed. Tries left: %d.", address, tries);
-    set_timeout("update_retry", 10000, [this, tries]() {
-      update_retry(tries);
-    });
-  } else {
+    set_timeout("update_retry", 10000, [this, tries]()
+                { update_retry(tries); });
+  }
+  else
+  {
     ESP_LOGW(TAG, "Update of %10llx failed. Too many tries.", address);
     reset_state();
   }
 }
 
-void CometBlueClimate::reset_state() {
+void CometBlueClimate::reset_state()
+{
 }
 
-void CometBlueClimate::control(const ClimateCall &call) {
+void CometBlueClimate::control(const ClimateCall &call)
+{
   cancel_timeout("control_retry");
   ClimateCall call_data = call;
-  defer("control_retry", [this, call]() {
-    control_retry(call, 3);
-  });
+  defer("control_retry", [this, call]()
+        { control_retry(call, 3); });
 }
 
-void CometBlueClimate::control_retry(ClimateCall call, int tries) {
+void CometBlueClimate::control_retry(ClimateCall call, int tries)
+{
   ESP_LOGI(TAG, "Requesting climate control of %10llx...", address);
 
-  bool success = with_connection([this, call]() {
+  bool success = with_connection([this, call]()
+                                 {
     int calls = 0;
 
     calls += send_pincode();
@@ -98,24 +110,26 @@ void CometBlueClimate::control_retry(ClimateCall call, int tries) {
       publish_state();
     }
 
-    return calls > 0;
-  });
+    return calls > 0; });
 
-  if (success) {
+  if (success)
+  {
     ESP_LOGW(TAG, "Climate control of %10llx succeeded.", address);
-  } else if (--tries > 0) {
+  }
+  else if (--tries > 0)
+  {
     ESP_LOGW(TAG, "Climate control of %10llx failed. Tries left: %d.", address, tries);
-    set_timeout("control_retry", 10000, [this, call, tries]() {
-      control_retry(call, tries);
-    });
-  } else {
+    set_timeout("control_retry", 10000, [this, call, tries]()
+                { control_retry(call, tries); });
+  }
+  else
+  {
     ESP_LOGW(TAG, "Climate control of %10llx failed. Too many tries.", address);
   }
 }
 
-
-
-ClimateTraits CometBlueClimate::traits() {
+ClimateTraits CometBlueClimate::traits()
+{
   auto traits = ClimateTraits();
   traits.set_supports_current_temperature(true);
   traits.set_supports_heat_mode(true);
@@ -125,7 +139,8 @@ ClimateTraits CometBlueClimate::traits() {
   return traits;
 }
 
-void CometBlueClimate::dump_config() {
+void CometBlueClimate::dump_config()
+{
   LOG_CLIMATE("", "CometBlue Thermostat", this);
   LOG_UPDATE_INTERVAL(this);
   ESP_LOGCONFIG(TAG, "  Mac Address: %10llx", this->address);

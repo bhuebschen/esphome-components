@@ -5,7 +5,6 @@
 #include "esphome/components/climate/climate.h"
 #include "esphome/components/time/real_time_clock.h"
 
-
 #ifdef ARDUINO_ARCH_ESP32
 #include <memory>
 
@@ -26,9 +25,8 @@ enum CometBlueDay
   CometBlue_LastDay
 };
 
-class CometBlueClimate :
-  public esphome::climate::Climate,
-  public esphome::PollingComponent
+class CometBlueClimate : public esphome::climate::Climate,
+                         public esphome::PollingComponent
 {
 public:
   CometBlueClimate();
@@ -43,13 +41,17 @@ public:
   void set_pin(uint32_t new_pin) { pin = new_pin; }
   void set_temperature_offset(float offset) { temperature_offset = offset; }
   void set_time(esphome::time::RealTimeClock *clock) { time_clock = clock; }
-  void set_window_open_config(int8_t sensitivity, int8_t minutes) { window_open_sensitivity = sensitivity; window_open_minutes = minutes; }
+  void set_window_open_config(int8_t sensitivity, int8_t minutes)
+  {
+    window_open_sensitivity = sensitivity;
+    window_open_minutes = minutes;
+  }
 
 public:
   void control(const esphome::climate::ClimateCall &call) override;
   void update() override;
 
-private:  
+private:
   bool with_connection(std::function<bool()> handler);
   bool connect();
   void disconnect();
@@ -58,13 +60,13 @@ private:
   void reset_state();
   void update_retry(int retry);
   void control_retry(esphome::climate::ClimateCall call, int retry);
-  
+
   bool send_pincode();
   bool get_time();
   bool get_temperature();
   bool get_flags();
 
-private:  
+private:
   bool query_state();
   bool set_auto_mode();
   bool set_manual_mode();
@@ -74,14 +76,14 @@ private:
 private:
   void parse_flags(const uint8_t *data);
   void parse_temperature(const uint8_t *data);
-  
+
   uint64_t address{0};
   uint32_t pin;
   float temperature_offset;
   uint8_t window_open_minutes;
   uint8_t window_open_sensitivity;
   esphome::time::RealTimeClock *time_clock{nullptr};
-  std::unique_ptr<ESP32BLEClient> ble_client;  
+  std::unique_ptr<ESP32BLEClient> ble_client;
 };
 
 #endif

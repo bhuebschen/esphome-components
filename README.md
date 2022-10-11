@@ -1,4 +1,4 @@
-# ayufan's esphome custom components
+# ayufan's + GrumpyMeow's esphome custom components
 
 This repository contains a collection of my custom components
 for [ESPHome](https://esphome.io/).
@@ -10,7 +10,7 @@ with external components and add this to your `.yaml` definition:
 
 ```yaml
 external_components:
-  - source: github://ayufan/esphome-components
+  - source: github://bhuebschen/esphome-components
 ```
 
 ## 2. Components
@@ -248,13 +248,13 @@ esp32_camera:
   resolution: 1600x1200
   jpeg_quality: 12
 ```
-### 2.4 Comet Blue
+### 2.6 Comet Blue
 Basic component to:
 * get the current temperature
 * set the target temperature
 This component doesn't support scheduling as I do this through Home Assistant by changing the target temperature.
 
-#### 2.4.1 Example configuration
+#### 2.6.1 Example configuration
 ```yaml
 wifi:
   ssid: "..."
@@ -294,6 +294,96 @@ switch:
     turn_on_action:
       - component.update: trv_cb1
 
+```
+
+
+### 2.7. `e131`
+
+A component to support [E1.31](https://www.doityourselfchristmas.com/wiki/index.php?title=E1.31_(Streaming-ACN)_Protocol). This allows to control addressable LEDs over WiFi, by pushing data right into LEDs.
+
+The most popular application to push data would be: [JINX](http://www.live-leds.de/jinx-v1-3-with-resizable-mainwindow-real-dmx-and-sacne1-31/).
+
+#### 2.7.1 Example configuration
+```yaml
+e131_custom:
+  method: multicast # Register E1.31 to Multicast group
+  # method: unicast # Listen only on port
+
+light:
+  - platform: neopixelbus
+    pin: D4
+    method: ESP8266_UART1
+    num_leds: 189
+    name: LEDs
+    effects:
+      - e131:
+          universe: 1
+          channels: RGB
+          # channels: RGBW: to support additional W-channel
+```
+
+There are three modes of operation:
+
+- `MONO`: this supports 1 channel per LED (luminance), up-to 512 LEDs per universe
+- `RGB`: this supports 3 channels per LED (RGB), up-to 170 LEDs (3*170 = 510 bytes) per universe
+- `RGBW`: this supports 4 channels per LED (RGBW), up-to 128 LEDs (4*128 = 512 bytes) per universe
+
+If there's more LEDs than allowed per-universe, additional universe will be used.
+In the above example of 189 LEDs, first 170 LEDs will be assigned to 1 universe,
+the rest of 19 LEDs will be automatically assigned to 2 universe.
+
+It is possible to enable multiple light platforms to listen to the same universe concurrently,
+allowing to replicate the behaviour on multiple strips.
+
+Sometimes it might be advised to improved of connection. By default `multicast` is used,
+but in some circumstances it might be advised to connect directly via IP to the esp-node.
+
+### 2.8. `adalight`
+
+A component to support [Adalight](https://learn.adafruit.com/adalight-diy-ambient-tv-lighting). This allows to control addressable LEDs over UART, by pushing data right into LEDs.
+
+The most useful to use [Prismatik](https://github.com/psieg/Lightpack) to create an immersive effect on PC.
+
+#### 2.8.1 Example configuration
+```yaml
+adalight:
+
+uart:
+  - id: adalight_uart
+    tx_pin: TX
+    rx_pin: RX
+    baud_rate: 115200
+
+light:
+  - platform: neopixelbus
+    pin: D4
+    method: ESP8266_UART1
+    num_leds: 189
+    name: LEDs
+    effects:
+      - adalight:
+          uart_id: adalight_uart
+```
+
+### 2.9. `WLED`
+
+A component to support [WLED](https://github.com/Aircoookie/WLED/wiki/UDP-Realtime-Control). This allows to control addressable LEDs over WiFi/UDP, by pushing data right into LEDs.
+
+The most useful to use [Prismatik](https://github.com/psieg/Lightpack) to create an immersive effect on PC.
+
+#### 2.9.1 Example configuration
+```yaml
+wled:
+
+light:
+  - platform: neopixelbus
+    pin: D4
+    method: ESP8266_UART1
+    num_leds: 189
+    name: LEDs
+    effects:
+      - wled:
+          # port: 21324 # optional port to allow usage of multiple LED strips
 ```
 
 ## 3. Author & License

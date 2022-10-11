@@ -5,10 +5,8 @@ from esphome.const import CONF_ID, CONF_MAC_ADDRESS, \
     UNIT_EMPTY, ICON_EMPTY, ICON_PULSE, \
     UNIT_PERCENT, ICON_BATTERY, \
     UNIT_WATT, ICON_FLASH, \
-    ICON_BRIGHTNESS_5, ICON_CURRENT_AC, \
-    PLATFORM_ESP32
+    ICON_BRIGHTNESS_5, ICON_CURRENT_AC
 
-ESP_PLATFORMS = [PLATFORM_ESP32]
 DEPENDENCIES = ['esp32_ble_tracker']
 
 iNodeMeterSensor = cg.global_ns.class_('iNodeMeterSensor',
@@ -24,7 +22,7 @@ CONF_TOTAL_DM3 = 'total_dm3'
 CONF_BATTERY_LEVEL = 'battery_level'
 CONF_LIGHT_LEVEL = 'light_level'
 
-UNIT_KWH = 'kW/h'
+UNIT_KWH = 'kWh'
 
 UNIT_DM3 = 'dm3'
 
@@ -33,16 +31,16 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_MAC_ADDRESS): cv.mac_address,
     cv.Optional(CONF_CONSTANT, default=1000): cv.positive_not_null_int,
 
-    cv.Optional(CONF_AVG_RAW): sensor.sensor_schema(UNIT_EMPTY, ICON_PULSE, 0),
-    cv.Optional(CONF_AVG_W): sensor.sensor_schema(UNIT_WATT, ICON_CURRENT_AC, 2),
-    cv.Optional(CONF_AVG_DM3): sensor.sensor_schema(UNIT_DM3, ICON_EMPTY, 2),
+    cv.Optional(CONF_AVG_RAW): sensor.sensor_schema(unit_of_measurement=UNIT_EMPTY, icon=ICON_PULSE, accuracy_decimals=0),
+    cv.Optional(CONF_AVG_W): sensor.sensor_schema(unit_of_measurement=UNIT_WATT, icon=ICON_CURRENT_AC, accuracy_decimals=2),
+    cv.Optional(CONF_AVG_DM3): sensor.sensor_schema(unit_of_measurement=UNIT_DM3, icon=ICON_EMPTY, accuracy_decimals=2),
 
-    cv.Optional(CONF_TOTAL_RAW): sensor.sensor_schema(UNIT_EMPTY, ICON_PULSE, 0),
-    cv.Optional(CONF_TOTAL_KWH): sensor.sensor_schema(UNIT_KWH, ICON_FLASH, 2),
-    cv.Optional(CONF_TOTAL_DM3): sensor.sensor_schema(UNIT_DM3, ICON_EMPTY, 2),
+    cv.Optional(CONF_TOTAL_RAW): sensor.sensor_schema(unit_of_measurement=UNIT_EMPTY, icon=ICON_PULSE, accuracy_decimals=0),
+    cv.Optional(CONF_TOTAL_KWH): sensor.sensor_schema(unit_of_measurement=UNIT_KWH, icon=ICON_FLASH, accuracy_decimals=2),
+    cv.Optional(CONF_TOTAL_DM3): sensor.sensor_schema(unit_of_measurement=UNIT_DM3, icon=ICON_EMPTY, accuracy_decimals=2),
 
-    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_BATTERY, 0),
-    cv.Optional(CONF_LIGHT_LEVEL): sensor.sensor_schema(UNIT_PERCENT, ICON_BRIGHTNESS_5, 0),
+    cv.Optional(CONF_BATTERY_LEVEL): sensor.sensor_schema(unit_of_measurement=UNIT_PERCENT, icon=ICON_BATTERY, accuracy_decimals=0),
+    cv.Optional(CONF_LIGHT_LEVEL): sensor.sensor_schema(unit_of_measurement=UNIT_PERCENT, icon=ICON_BRIGHTNESS_5, accuracy_decimals=0),
 }).extend(esp32_ble_tracker.ESP_BLE_DEVICE_SCHEMA).extend(cv.COMPONENT_SCHEMA)
 
 def to_code(config):

@@ -10,7 +10,11 @@ with external components and add this to your `.yaml` definition:
 
 ```yaml
 external_components:
+<<<<<<< HEAD
   - source: github://bhuebschen/esphome-components
+=======
+  - source: github://ayufan/esphome-components
+>>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 ```
 
 ## 2. Components
@@ -115,6 +119,7 @@ switch:
 ```
 
 ### 2.3. `tplink_plug`
+<<<<<<< HEAD
 
 This plugin allows to emulate TPLink HS100/HS110 type of plug
 using LAN protocol with ESPHome. Especially useful where you
@@ -298,79 +303,124 @@ switch:
 
 
 ### 2.7. `e131`
+=======
+>>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 
-A component to support [E1.31](https://www.doityourselfchristmas.com/wiki/index.php?title=E1.31_(Streaming-ACN)_Protocol). This allows to control addressable LEDs over WiFi, by pushing data right into LEDs.
-
-The most popular application to push data would be: [JINX](http://www.live-leds.de/jinx-v1-3-with-resizable-mainwindow-real-dmx-and-sacne1-31/).
+This plugin allows to emulate TPLink HS100/HS110 type of plug
+using LAN protocol with ESPHome. Especially useful where you
+want to use existing software that supports these type of plugs,
+but not others.
 
 #### 2.7.1 Example configuration
 ```yaml
-e131_custom:
-  method: multicast # Register E1.31 to Multicast group
-  # method: unicast # Listen only on port
+tplink_plug:
+  plugs:
+    voltage: my_voltage
+    current: my_current
+    total: my_total
+    state: relay
 
-light:
-  - platform: neopixelbus
-    pin: D4
-    method: ESP8266_UART1
-    num_leds: 189
-    name: LEDs
-    effects:
-      - e131:
-          universe: 1
-          channels: RGB
-          # channels: RGBW: to support additional W-channel
-```
+# Example config for Gosund SP111
 
-There are three modes of operation:
+sensor:
+  - id: my_daily_total
+    platform: total_daily_energy
+    name: "MK3S+ Daily Energy"
+    power_id: my_power
 
-- `MONO`: this supports 1 channel per LED (luminance), up-to 512 LEDs per universe
-- `RGB`: this supports 3 channels per LED (RGB), up-to 170 LEDs (3*170 = 510 bytes) per universe
-- `RGBW`: this supports 4 channels per LED (RGBW), up-to 128 LEDs (4*128 = 512 bytes) per universe
+  - platform: hlw8012
+    sel_pin:
+      number: GPIO12
+      inverted: true
+    cf_pin: GPIO05
+    cf1_pin: GPIO04
+    current:
+      id: my_current
+      name: "MK3S+ Current"
+      expire_after: 1min
+    voltage:
+      id: my_voltage
+      name: "MK3S+ Voltage"
+      expire_after: 1min
+    power:
+      id: my_power
+      name: "MK3S+ Power"
+      expire_after: 1min
+      filters:
+        - multiply: 0.5
+    energy:
+      id: my_total
+      name: "MK3S+ Energy"
+      expire_after: 1min
+      filters:
+        - multiply: 0.5
+    change_mode_every: 3
+    update_interval: 15s
+    voltage_divider: 748
+    current_resistor: 0.0012
 
-If there's more LEDs than allowed per-universe, additional universe will be used.
-In the above example of 189 LEDs, first 170 LEDs will be assigned to 1 universe,
-the rest of 19 LEDs will be automatically assigned to 2 universe.
+    # {"PowerSetCal":10085}
+    # {"VoltageSetCal":1581}
+    # {"CurrentSetCal":3555}
 
-It is possible to enable multiple light platforms to listen to the same universe concurrently,
-allowing to replicate the behaviour on multiple strips.
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO13
+      mode: INPUT
+      inverted: true
+    name: "MK3S+ Button"
+    on_press:
+      - switch.toggle: relay
 
-Sometimes it might be advised to improved of connection. By default `multicast` is used,
-but in some circumstances it might be advised to connect directly via IP to the esp-node.
-
+<<<<<<< HEAD
 ### 2.8. `adalight`
+=======
+switch:
+  - platform: gpio
+    id: relay
+    name: "MK3S+ Switch"
+    pin: GPIO15
+    restore_mode: RESTORE_DEFAULT_OFF
+    icon: mdi:power-socket-eu
+    on_turn_on:
+      - output.turn_on: led
+    on_turn_off:
+      - output.turn_off: led
 
-A component to support [Adalight](https://learn.adafruit.com/adalight-diy-ambient-tv-lighting). This allows to control addressable LEDs over UART, by pushing data right into LEDs.
+status_led:
+  pin:
+    number: GPIO00
+    inverted: true
 
-The most useful to use [Prismatik](https://github.com/psieg/Lightpack) to create an immersive effect on PC.
+output:
+  - platform: gpio
+    pin: GPIO02
+    inverted: true
+    id: led
+```
+>>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
+
+### 2.4. `memory`
+
+Simple component that periodically prints free memory of node.
 
 #### 2.8.1 Example configuration
 ```yaml
-adalight:
-
-uart:
-  - id: adalight_uart
-    tx_pin: TX
-    rx_pin: RX
-    baud_rate: 115200
-
-light:
-  - platform: neopixelbus
-    pin: D4
-    method: ESP8266_UART1
-    num_leds: 189
-    name: LEDs
-    effects:
-      - adalight:
-          uart_id: adalight_uart
+memory:
 ```
 
+<<<<<<< HEAD
 ### 2.9. `WLED`
+=======
+### 2.5. `esp32_camera_web_server` (upstreamed)
+>>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 
-A component to support [WLED](https://github.com/Aircoookie/WLED/wiki/UDP-Realtime-Control). This allows to control addressable LEDs over WiFi/UDP, by pushing data right into LEDs.
+_This component was removed as it is part of upstream esphome starting with version 2021.11: https://esphome.io/components/esp32_camera_web_server.html_
 
-The most useful to use [Prismatik](https://github.com/psieg/Lightpack) to create an immersive effect on PC.
+Simple component to expose `esp32_camera` via HTTP snapshot and stream interface:
 
+<<<<<<< HEAD
 #### 2.9.1 Example configuration
 ```yaml
 wled:
@@ -384,6 +434,35 @@ light:
     effects:
       - wled:
           # port: 21324 # optional port to allow usage of multiple LED strips
+=======
+- http://esphome:8080/
+- http://esphome:8081/
+
+```yaml
+esp32_camera_web_server:
+  # define only what is needed
+  # only a single stream is supported at a given time
+  - port: 8080
+    mode: stream
+  - port: 8081
+    mode: snapshot
+
+esp32_camera:
+  name: My Camera
+  external_clock:
+    pin: GPIO0
+    frequency: 20MHz
+  i2c_pins:
+    sda: GPIO26
+    scl: GPIO27
+  data_pins: [GPIO5, GPIO18, GPIO19, GPIO21, GPIO36, GPIO39, GPIO34, GPIO35]
+  vsync_pin: GPIO25
+  href_pin: GPIO23
+  pixel_clock_pin: GPIO22
+  power_down_pin: GPIO32
+  resolution: 1600x1200
+  jpeg_quality: 12
+>>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 ```
 
 ## 3. Author & License

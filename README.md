@@ -10,11 +10,7 @@ with external components and add this to your `.yaml` definition:
 
 ```yaml
 external_components:
-<<<<<<< HEAD
   - source: github://bhuebschen/esphome-components
-=======
-  - source: github://ayufan/esphome-components
->>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 ```
 
 ## 2. Components
@@ -119,7 +115,6 @@ switch:
 ```
 
 ### 2.3. `tplink_plug`
-<<<<<<< HEAD
 
 This plugin allows to emulate TPLink HS100/HS110 type of plug
 using LAN protocol with ESPHome. Especially useful where you
@@ -303,8 +298,6 @@ switch:
 
 
 ### 2.7. `e131`
-=======
->>>>>>> c21ba2fcd63f26f0c40ce7e53d44843a982c0220
 
 This plugin allows to emulate TPLink HS100/HS110 type of plug
 using LAN protocol with ESPHome. Especially useful where you
